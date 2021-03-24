@@ -11,18 +11,18 @@ import FavoriteMovieList from './components/FavoriteMovieList';
 
 import axios from 'axios';
 
+import * as api from './api'
+
 const App = (props) => {
   const [movies, setMovies] = useState([]);
   const [favoriteMovies, setFavoriteMovies] = useState([]);
 
   useEffect(()=>{
-    axios.get('http://localhost:5000/api/movies')
-      .then(res => {
-        setMovies(res.data);
-      })
+    api.fetchMovies()
+      .then(movies => setMovies(movies))
       .catch(err => {
-        console.log(err);
-      });
+        console.log(err)
+      })
   }, []);
 
   const deleteMovie = (id)=> {
@@ -46,6 +46,7 @@ const App = (props) => {
         
           <Switch>
             <Route path="/movies/edit/:id">
+              <EditMovieForm setMovies={setMovies}/>
             </Route>
 
             <Route path="/movies/:id">
