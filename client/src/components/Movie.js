@@ -3,10 +3,13 @@ import { Link, useParams, useHistory } from 'react-router-dom';
 
 import * as api from '../api'
 
+import DeleteMovieModal from './DeleteMovieModal'
+
 const Movie = (props) => {
     const { addToFavorites, deleteMovie } = props;
 
     const [movie, setMovie] = useState('');
+    const [isDeleting, setIsDeleting] = useState(false)
 
     const { id } = useParams();
     const { push } = useHistory();
@@ -18,15 +21,28 @@ const Movie = (props) => {
     }, [id]);
 
     const onClickDelete = (evt) => {
+      setIsDeleting(true)
+    }
+
+    const onCancelDelete = () => {
+      setIsDeleting(false)
+    }
+
+    const onConfirmDelete = (evt) => {
+      evt.preventDefault()
       api.deleteMovie(id)
         .then(deletedId => {
+          setIsDeleting(false)
           deleteMovie(deletedId)
           push('/movies')
         })
         .catch(err => console.log(err))
     }
 
-    return(<div className="modal-page col">
+  return(
+    <>
+      {isDeleting && <DeleteMovieModal style={{ zIndex: 5 }} onConfirm={onConfirmDelete} onCancel={onCancelDelete} /> }
+      <div className="modal-page col">
         <div className="modal-dialog">
             <div className="modal-content">
                 <div className="modal-header">						
@@ -63,7 +79,9 @@ const Movie = (props) => {
                 </div>
             </div>
         </div>
-    </div>);
+    </div>
+    </>  
+  );
 }
 
 export default Movie;
