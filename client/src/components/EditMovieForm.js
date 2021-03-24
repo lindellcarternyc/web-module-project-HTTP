@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
-import axios from 'axios';
 import * as api from '../api'
 
 const EditMovieForm = (props) => {
