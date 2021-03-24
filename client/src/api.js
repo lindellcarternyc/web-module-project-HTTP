@@ -32,3 +32,12 @@ export const editMovie = async (id, movie) => {
     throw err
   }
 }
+
+export const deleteMovie = async (id) => {
+  try {
+    const response = await apiAxios().delete(`/${id}`)
+    return response.data
+  } catch (err) {
+    throw err
+  }
+}
