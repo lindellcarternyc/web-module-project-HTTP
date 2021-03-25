@@ -21,7 +21,7 @@ const EditMovieForm = (props) => {
     api.fetchMovie(id)
       .then(movie => setMovie(movie))
       .catch(err => console.log(err))
-  }, [])
+  }, [id])
 	
 	const handleChange = (e) => {
         setMovie({

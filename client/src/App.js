@@ -9,8 +9,6 @@ import AddMovieForm from './components/AddMovieForm'
 import EditMovieForm from './components/EditMovieForm';
 import FavoriteMovieList from './components/FavoriteMovieList';
 
-import axios from 'axios';
-
 import * as api from './api'
 
 const App = (props) => {
