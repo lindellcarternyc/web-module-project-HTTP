@@ -1,27 +1,48 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams, useHistory } from 'react-router-dom';
 
-import axios from 'axios';
+import * as api from '../api'
+
+import DeleteMovieModal from './DeleteMovieModal'
 
 const Movie = (props) => {
-    const { addToFavorites } = props;
+    const { addToFavorites, deleteMovie } = props;
 
     const [movie, setMovie] = useState('');
+    const [isDeleting, setIsDeleting] = useState(false)
 
     const { id } = useParams();
     const { push } = useHistory();
 
     useEffect(()=>{
-        axios.get(`http://localhost:5000/api/movies/${id}`)
-            .then(res=>{
-                setMovie(res.data);
-            })
-            .catch(err=>{
-                console.log(err);
-            })
+        api.fetchMovie(id)
+          .then(movie => setMovie(movie))
+          .catch(err => console.log(err))
     }, [id]);
 
-    return(<div className="modal-page col">
+    const onClickDelete = (evt) => {
+      setIsDeleting(true)
+    }
+
+    const onCancelDelete = () => {
+      setIsDeleting(false)
+    }
+
+    const onConfirmDelete = (evt) => {
+      evt.preventDefault()
+      api.deleteMovie(id)
+        .then(deletedId => {
+          setIsDeleting(false)
+          deleteMovie(deletedId)
+          push('/movies')
+        })
+        .catch(err => console.log(err))
+    }
+
+  return(
+    <>
+      {isDeleting && <DeleteMovieModal style={{ zIndex: 5 }} onConfirm={onConfirmDelete} onCancel={onCancelDelete} /> }
+      <div className="modal-page col">
         <div className="modal-dialog">
             <div className="modal-content">
                 <div className="modal-header">						
@@ -50,15 +71,17 @@ const Movie = (props) => {
                         </section>
                         
                         <section>
-                            <span className="m-2 btn btn-dark">Favorite</span>
+                            <span className="m-2 btn btn-dark" onClick={() => addToFavorites(movie)}>Favorite</span>
                             <Link to={`/movies/edit/${movie.id}`} className="m-2 btn btn-success">Edit</Link>
-                            <span className="delete"><input type="button" className="m-2 btn btn-danger" value="Delete"/></span>
+                            <span className="delete" onClick={onClickDelete}><input type="button" className="m-2 btn btn-danger" value="Delete"/></span>
                         </section>
                     </div>
                 </div>
             </div>
         </div>
-    </div>);
+    </div>
+    </>  
+  );
 }
 
 export default Movie;

@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
-import axios from 'axios';
+import * as api from '../api'
 
 const EditMovieForm = (props) => {
+  const { setMovies } = props
 	const { push } = useHistory();
+  const { id } = useParams()
 
 	const [movie, setMovie] = useState({
 		title:"",
@@ -14,6 +16,12 @@ const EditMovieForm = (props) => {
 		metascore: 0,
 		description: ""
 	});
+
+  useEffect(() => {
+    api.fetchMovie(id)
+      .then(movie => setMovie(movie))
+      .catch(err => console.log(err))
+  }, [id])
 	
 	const handleChange = (e) => {
         setMovie({
@@ -23,7 +31,21 @@ const EditMovieForm = (props) => {
     }
 
     const handleSubmit = (e) => {
-        e.preventDefault();
+      e.preventDefault();
+
+      api.editMovie(id, movie)
+        .then(updatedMovie => {
+          setMovies(currMovies => currMovies.map(curr => {
+            if (curr.id === id) {
+              return updatedMovie
+            }
+            return curr
+          }))
+          push(`/movies/${id}`)
+        })
+        .catch(err => {
+          console.log(err)
+        })
 	}
 	
 	const { title, director, genre, metascore, description } = movie;

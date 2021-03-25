@@ -5,32 +5,31 @@ import MovieList from './components/MovieList';
 import Movie from './components/Movie';
 
 import MovieHeader from './components/MovieHeader';
-
+import AddMovieForm from './components/AddMovieForm'
 import EditMovieForm from './components/EditMovieForm';
 import FavoriteMovieList from './components/FavoriteMovieList';
 
-import axios from 'axios';
+import * as api from './api'
 
 const App = (props) => {
   const [movies, setMovies] = useState([]);
   const [favoriteMovies, setFavoriteMovies] = useState([]);
 
   useEffect(()=>{
-    axios.get('http://localhost:5000/api/movies')
-      .then(res => {
-        setMovies(res.data);
-      })
+    api.fetchMovies()
+      .then(movies => setMovies(movies))
       .catch(err => {
-        console.log(err);
-      });
+        console.log(err)
+      })
   }, []);
 
   const deleteMovie = (id)=> {
-    
+    setMovies(movies.filter(m => m.id !== id))
   }
 
   const addToFavorites = (movie) => {
-    
+    if (favoriteMovies.find(m => m.id === movie.id)) return
+    return setFavoriteMovies([...favoriteMovies, movie])
   }
 
   return (
@@ -46,10 +45,15 @@ const App = (props) => {
         
           <Switch>
             <Route path="/movies/edit/:id">
+              <EditMovieForm setMovies={setMovies}/>
+            </Route>
+
+            <Route path="/movies/add">
+              <AddMovieForm setMovies={setMovies} />
             </Route>
 
             <Route path="/movies/:id">
-              <Movie/>
+              <Movie deleteMovie={deleteMovie} addToFavorites={addToFavorites}/>
             </Route>
 
             <Route path="/movies">
